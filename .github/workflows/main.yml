@@ -9,7 +9,11 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
       - name: Build Solution
-        run: msbuild /p:Configuration=Release /p:Platform=x64
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Recurse -Include *.sln,*.vcxproj | Select-Object -First 1
+          Write-Host "Found project: $($proj.FullName)"
+          msbuild "$($proj.FullName)" /p:Configuration=Release /p:Platform=x64
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
