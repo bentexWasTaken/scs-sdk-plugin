@@ -14,7 +14,9 @@ jobs:
         shell: pwsh
         run: |
           $repo = (Get-Location).Path
-          nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln -PackagesDirectory "$repo\scs-client\C#\SCSSdkClient\packages"
+          $packages = "$repo\scs-client\C#\SCSSdkClient\packages"
+          nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln -PackagesDirectory $packages
+          nuget install .\scs-client\C#\SCSSdkClient.Demo\SCSSdkClient.Demo\packages.config -OutputDirectory $packages
       - name: Build Solution
         shell: pwsh
         run: |
