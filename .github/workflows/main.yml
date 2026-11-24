@@ -11,7 +11,7 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
       - name: Restore NuGet packages
-        run: nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln
+        run: nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln -PackagesDirectory .\scs-client\C#\SCSSdkClient\packages
       - name: Build Solution
         shell: pwsh
         run: |
