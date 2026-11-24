@@ -19,8 +19,13 @@ jobs:
           $config = Join-Path $repo 'scs-client/C#/SCSSdkClient.Demo/SCSSdkClient.Demo/packages.config'
           nuget install $config -OutputDirectory $packages -Force -NonInteractive -Verbosity detailed
           if ($LASTEXITCODE -ne 0) { throw "NuGet package installation failed with exit code $LASTEXITCODE." }
-          $dll = Join-Path $packages 'Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll'
-          if (-not (Test-Path $dll)) { throw "Newtonsoft.Json was not installed to $dll" }
+          $expected = Join-Path $packages 'Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll'
+          if (-not (Test-Path $expected)) {
+            $source = Get-ChildItem $repo -Recurse -Filter Newtonsoft.Json.dll | Select-Object -First 1
+            if (-not $source) { throw 'NuGet did not produce Newtonsoft.Json.dll anywhere in the checkout.' }
+            New-Item -ItemType Directory -Force -Path (Split-Path $expected) | Out-Null
+            Copy-Item $source.FullName $expected -Force
+          }
       - name: Build Solution
         shell: pwsh
         run: |
