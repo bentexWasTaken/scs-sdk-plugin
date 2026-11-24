@@ -16,7 +16,8 @@ jobs:
           $repo = (Get-Location).Path
           $packages = "$repo\scs-client\C#\SCSSdkClient\packages"
           nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln -PackagesDirectory $packages
-          nuget install .\scs-client\C#\SCSSdkClient.Demo\SCSSdkClient.Demo\packages.config -OutputDirectory $packages
+          nuget install Newtonsoft.Json -Version 11.0.2 -OutputDirectory $packages
+          if (-not (Test-Path "$packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll")) { throw "Newtonsoft.Json was not installed to the expected path." }
       - name: Build Solution
         shell: pwsh
         run: |
