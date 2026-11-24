@@ -13,11 +13,14 @@ jobs:
       - name: Restore NuGet packages
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $repo = (Get-Location).Path
-          $packages = "$repo\scs-client\C#\SCSSdkClient\packages"
-          nuget restore .\scs-client\C#\SCSSdkClient\SCSSdk.sln -PackagesDirectory $packages
-          nuget install Newtonsoft.Json -Version 11.0.2 -OutputDirectory $packages
-          if (-not (Test-Path "$packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll")) { throw "Newtonsoft.Json was not installed to the expected path." }
+          $packages = Join-Path $repo 'scs-client/C#/SCSSdkClient/packages'
+          $config = Join-Path $repo 'scs-client/C#/SCSSdkClient.Demo/SCSSdkClient.Demo/packages.config'
+          nuget install $config -OutputDirectory $packages -Force -NonInteractive -Verbosity detailed
+          if ($LASTEXITCODE -ne 0) { throw "NuGet package installation failed with exit code $LASTEXITCODE." }
+          $dll = Join-Path $packages 'Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll'
+          if (-not (Test-Path $dll)) { throw "Newtonsoft.Json was not installed to $dll" }
       - name: Build Solution
         shell: pwsh
         run: |
